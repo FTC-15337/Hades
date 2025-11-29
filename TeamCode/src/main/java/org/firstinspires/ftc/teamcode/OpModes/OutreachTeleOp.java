@@ -14,11 +14,17 @@ public class OutreachTeleOp extends LinearOpMode {
     double forward, strafe, rotate;
 
     public void setDriver(){
-        ConstantValues.driveMaxSpeed = ConstantValues.outreachDriveSpeed;
-        forward = -gamepad1.left_stick_y;
-        strafe = gamepad1.left_stick_x;
-        rotate = gamepad1.right_stick_x;
-        drive.driveFieldRelative(forward, strafe, rotate);
+        if(gamepad2.a) {
+            ConstantValues.driveMaxSpeed = ConstantValues.outreachDriveSpeed;
+            forward = -gamepad1.left_stick_y;
+            strafe = gamepad1.left_stick_x;
+            rotate = gamepad1.right_stick_x;
+            drive.driveFieldRelative(forward, strafe, rotate);
+        }
+
+        if(gamepad2.dpad_up) {
+            drive.imu.resetYaw();
+        }
     }
     @Override
     public void runOpMode(){

@@ -6,5 +6,6 @@ public class ConstantValues {
     public static final double intakeReverse = -1.0;
     public static final double driveMaxPower = 1.0;
     public static double driveMaxSpeed = 1.0;
+    public static double outreachDriveSpeed = 0.5;
 
 }

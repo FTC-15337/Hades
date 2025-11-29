@@ -6,10 +6,12 @@ import org.firstinspires.ftc.teamcode.Mechanisms.ConstantValues;
 import org.firstinspires.ftc.teamcode.Mechanisms.IntakeConfig;
 import org.firstinspires.ftc.teamcode.Mechanisms.MecanumDrivebase;
 
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp")
 public class TeleOp extends LinearOpMode {
     MecanumDrivebase drive = new MecanumDrivebase();
-    double forward, strafe, rotate;
     IntakeConfig intake = new IntakeConfig();
+
+    double forward, strafe, rotate;
     public void setOperator(){
         if(gamepad2.left_trigger > 0.7){
             intake.intakeMax();

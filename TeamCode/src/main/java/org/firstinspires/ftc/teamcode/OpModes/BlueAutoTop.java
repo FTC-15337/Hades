@@ -33,7 +33,9 @@ public class BlueAutoTop extends OpMode {
         DRIVE_STARTPOS_SHOOT_POS,
         SHOOT_PRELOAD,
         DRIVE_BPICKUP_FPICKUP, // BPICKUP is begin pickup and EPICKUP is end pickup
-        DRIVE_PICKUP1_SHOOT_POS
+        DRIVE_PICKUP1_SHOOT_POS,
+        SHOOT_ONE,
+        DRIVE_BPICKUP_FPICKUP2
     }
 
     PathState pathState;
@@ -44,7 +46,9 @@ public class BlueAutoTop extends OpMode {
     private final Pose beginPickup1 = new Pose(47.71995332555426, 84.18203033838974, Math.toRadians(180));
     private final Pose finalPickup1 = new Pose(14.786464410735121, 83.84597432905484, Math.toRadians(180));
 
-    private PathChain driveStartPosShootPos, driveShootPosBPickupPos, driveBPoseFPose;
+    private final Pose beginPickup2 = new Pose(47.38389731621937, 59.649941656942815, Math.toRadians(180));
+
+    private PathChain driveStartPosShootPos, driveShootPosBPickupPos, driveBPoseFPose, driveFPoseShootPose, driveShootPosBPickup2;
 
     public void buildPaths() {
         // put in coordinates for starting pose > ending pose
@@ -62,6 +66,16 @@ public class BlueAutoTop extends OpMode {
                 .addPath(new BezierLine(beginPickup1, finalPickup1))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
+
+        driveFPoseShootPose = follower.pathBuilder()
+                .addPath(new BezierLine(finalPickup1, shootPose))
+                .setLinearHeadingInterpolation(finalPickup1.getHeading(), shootPose.getHeading())
+                .build();
+
+        driveShootPosBPickup2 = follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, beginPickup2))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), beginPickup2.getHeading())
+                .build();
     }
 
     public void statePathUpdate() {
@@ -75,11 +89,10 @@ public class BlueAutoTop extends OpMode {
                 if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1){ // not using sleep as it stops the whole thread so using timer instead
                     firingPre();
                     telemetry.addLine("Shooting");
-                    if(pathTimer.getElapsedTimeSeconds() > 9) {
+                    if(pathTimer.getElapsedTimeSeconds() > 8) {                                     //<- optimize if needed
                         // transition to next state
                         follower.followPath(driveShootPosBPickupPos, true);
                         telemetry.addLine("Going to intake");
-                        shooter.Stop();
                         setPathState(PathState.DRIVE_BPICKUP_FPICKUP);
                     }
                 }
@@ -88,13 +101,39 @@ public class BlueAutoTop extends OpMode {
                 if(!follower.isBusy()) {
                     intake.intakeMax();
                     if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() >= 0.25) {
-                        follower.setMaxPower(0.25);
+                        follower.setMaxPower(0.75);
                         telemetry.addLine("Intaking");
                         follower.followPath(driveBPoseFPose, true);
                         telemetry.addLine("Going to shoot");
                         setPathState(PathState.DRIVE_PICKUP1_SHOOT_POS);
                     }
                 }
+                break;
+            case DRIVE_PICKUP1_SHOOT_POS:
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.1) {
+                    sorter.setOutA();
+                    if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() >= 0.1) {
+                        follower.setMaxPower(1.0);
+                        telemetry.addLine("Going to shoot");
+                        follower.followPath(driveFPoseShootPose, true);
+                        setPathState(PathState.SHOOT_ONE);
+                    }
+                }
+                break;
+            case SHOOT_ONE:
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.1){ // not using sleep as it stops the whole thread so using timer instead
+                    firing();
+                    telemetry.addLine("Shooting");
+                    if(pathTimer.getElapsedTimeSeconds() > 6) {
+                        // transition to next state
+                        follower.followPath(driveShootPosBPickup2, true);
+                        telemetry.addLine("Going to intake");
+                        shooter.Stop();
+                        setPathState(PathState.DRIVE_BPICKUP_FPICKUP2);
+                    }
+                }
+                break;
+            //case DRIVE_BPICKUP_FPICKUP2:
             default:
                 telemetry.addLine("Not in any state");
                 break;
@@ -134,6 +173,37 @@ public class BlueAutoTop extends OpMode {
             kick.retract();
         }
         if (pathTimer.getElapsedTimeSeconds() > 7.8) {
+            sorter.setIntakeA();
+        }
+    }
+    public void firing() {
+        telemetry.addData("Time", pathTimer.getElapsedTimeSeconds());
+        if (pathTimer.getElapsedTimeSeconds() > 1 && pathTimer.getElapsedTimeSeconds() < 1.7) {
+            telemetry.addLine("Kicking");
+            kick.kick();
+        }
+        if (pathTimer.getElapsedTimeSeconds() > 1.7 && pathTimer.getElapsedTimeSeconds() < 2.4) {
+            kick.retract();
+        }
+        if(pathTimer.getElapsedTimeSeconds() > 2.4 && pathTimer.getElapsedTimeSeconds() < 2.7){
+            sorter.setOutC();
+        }
+        if (pathTimer.getElapsedTimeSeconds() > 2.7 && pathTimer.getElapsedTimeSeconds() < 3.4) {
+            kick.kick();
+        }
+        if (pathTimer.getElapsedTimeSeconds() > 3.4 && pathTimer.getElapsedTimeSeconds() < 4.1) {
+            kick.retract();
+        }
+        if(pathTimer.getElapsedTimeSeconds() > 4.1 && pathTimer.getElapsedTimeSeconds() < 4.4){
+            sorter.setOutB();
+        }
+        if (pathTimer.getElapsedTimeSeconds() > 4.4 && pathTimer.getElapsedTimeSeconds() < 5.1) {
+            kick.kick();
+        }
+        if (pathTimer.getElapsedTimeSeconds() > 5.1 && pathTimer.getElapsedTimeSeconds() < 5.8) {
+            kick.retract();
+        }
+        if (pathTimer.getElapsedTimeSeconds() > 5.8) {
             sorter.setIntakeA();
         }
     }

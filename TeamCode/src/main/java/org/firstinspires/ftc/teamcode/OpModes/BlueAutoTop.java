@@ -35,7 +35,8 @@ public class BlueAutoTop extends OpMode {
         DRIVE_BPICKUP_FPICKUP, // BPICKUP is begin pickup and EPICKUP is end pickup
         DRIVE_PICKUP1_SHOOT_POS,
         SHOOT_ONE,
-        DRIVE_BPICKUP_FPICKUP2
+        DRIVE_BPICKUP_FPICKUP2,
+        DRIVE_PICKUP2_SHOOT_POS
     }
 
     PathState pathState;
@@ -47,8 +48,9 @@ public class BlueAutoTop extends OpMode {
     private final Pose finalPickup1 = new Pose(14.786464410735121, 83.84597432905484, Math.toRadians(180));
 
     private final Pose beginPickup2 = new Pose(47.38389731621937, 59.649941656942815, Math.toRadians(180));
+    private final Pose finalPickup2 = new Pose(0, 59.649941656942815, Math.toRadians(180));
 
-    private PathChain driveStartPosShootPos, driveShootPosBPickupPos, driveBPoseFPose, driveFPoseShootPose, driveShootPosBPickup2;
+    private PathChain driveStartPosShootPos, driveShootPosBPickupPos, driveBPoseFPose, driveFPoseShootPose, driveShootPosBPickup2, driveBPoseFPose2;
 
     public void buildPaths() {
         // put in coordinates for starting pose > ending pose
@@ -76,6 +78,11 @@ public class BlueAutoTop extends OpMode {
                 .addPath(new BezierLine(shootPose, beginPickup2))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), beginPickup2.getHeading())
                 .build();
+
+        driveBPoseFPose2 = follower.pathBuilder()
+                .addPath(new BezierLine(beginPickup2, finalPickup2))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .build();
     }
 
     public void statePathUpdate() {
@@ -100,8 +107,8 @@ public class BlueAutoTop extends OpMode {
             case DRIVE_BPICKUP_FPICKUP:
                 if(!follower.isBusy()) {
                     intake.intakeMax();
-                    if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() >= 0.25) {
-                        follower.setMaxPower(0.75);
+                    if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() >= 1.0) {
+                        follower.setMaxPower(0.5);
                         telemetry.addLine("Intaking");
                         follower.followPath(driveBPoseFPose, true);
                         telemetry.addLine("Going to shoot");
@@ -128,12 +135,21 @@ public class BlueAutoTop extends OpMode {
                         // transition to next state
                         follower.followPath(driveShootPosBPickup2, true);
                         telemetry.addLine("Going to intake");
-                        shooter.Stop();
                         setPathState(PathState.DRIVE_BPICKUP_FPICKUP2);
                     }
                 }
                 break;
-            //case DRIVE_BPICKUP_FPICKUP2:
+            case DRIVE_BPICKUP_FPICKUP2:
+                if(!follower.isBusy()) {
+                    if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() >= 0.25) {
+                        follower.setMaxPower(0.5);
+                        telemetry.addLine("Intaking");
+                        follower.followPath(driveBPoseFPose2, true);
+                        telemetry.addLine("Going to shoot");
+                        setPathState(PathState.DRIVE_PICKUP2_SHOOT_POS);
+                    }
+                }
+                break;
             default:
                 telemetry.addLine("Not in any state");
                 break;

@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.ConstantValues;
 import org.firstinspires.ftc.teamcode.Mechanisms.IntakeConfig;
+import org.firstinspires.ftc.teamcode.Mechanisms.Kicker;
 import org.firstinspires.ftc.teamcode.Mechanisms.MecanumDrivebase;
 import org.firstinspires.ftc.teamcode.Mechanisms.ShootingConfig;
 import org.firstinspires.ftc.teamcode.Mechanisms.StorageConfig;
@@ -14,6 +15,7 @@ public class TeleOp extends LinearOpMode {
     IntakeConfig intake = new IntakeConfig();
     StorageConfig sorter = new StorageConfig();
     ShootingConfig shooter = new ShootingConfig();
+    Kicker kick = new Kicker();
 
     double forward, strafe, rotate;
     public void setOperator(){
@@ -31,6 +33,14 @@ public class TeleOp extends LinearOpMode {
             sorter.setOutB();
         } else if(gamepad2.x){
             sorter.setOutC();
+        }
+
+        if (gamepad2.y){
+            kick.kick();
+        } else if(gamepad2.right_bumper){
+            kick.zeroKick();
+        } else {
+            kick.retract();
         }
     }
     public void setDriver(){
@@ -59,6 +69,7 @@ public class TeleOp extends LinearOpMode {
         intake.init(hardwareMap);
         sorter.init(hardwareMap);
         shooter.init(hardwareMap);
+        kick.init(hardwareMap);
         waitForStart();
         while(opModeIsActive() && !isStopRequested()){
             telemetry.addLine("OpMode is active");

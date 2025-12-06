@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -36,7 +36,9 @@ public class BlueAutoTop extends OpMode {
         DRIVE_PICKUP1_SHOOT_POS,
         SHOOT_ONE,
         DRIVE_BPICKUP_FPICKUP2,
-        DRIVE_PICKUP2_SHOOT_POS
+        DRIVE_PICKUP2_SHOOT_POS,
+        SHOOT_TWO,
+        LEAVE
     }
 
     PathState pathState;
@@ -45,13 +47,16 @@ public class BlueAutoTop extends OpMode {
     private final Pose shootPose = new Pose(47.55192532088682, 95.77596266044341, Math.toRadians(130));
 
     private final Pose beginPickup1 = new Pose(47.71995332555426, 84.18203033838974, Math.toRadians(180));
-    private final Pose finalPickup1 = new Pose(14.786464410735121, 83.84597432905484, Math.toRadians(180));
+    private final Pose finalPickup1 = new Pose(15.786464410735121, 83.84597432905484, Math.toRadians(180));
 
     private final Pose beginPickup2 = new Pose(47.38389731621937, 59.649941656942815, Math.toRadians(180));
-    private final Pose finalPickup2 = new Pose(0, 59.649941656942815, Math.toRadians(180));
+    private final Pose finalPickup2 = new Pose(4, 59.649941656942815, Math.toRadians(180));
+    private final Pose midCurveFPickupShoot = new Pose(45.26829268292683, 36.8780487804878);
+    private final Pose leave = new Pose(52.68292682926829, 126.82926829268293, Math.toRadians(180));
 
-    private PathChain driveStartPosShootPos, driveShootPosBPickupPos, driveBPoseFPose, driveFPoseShootPose, driveShootPosBPickup2, driveBPoseFPose2;
+    private PathChain driveStartPosShootPos, driveShootPosBPickupPos, driveBPoseFPose, driveFPoseShootPose, driveShootPosBPickup2, driveBPoseFPose2, driveFPoseShootPose2, driveShootPosLeave;
 
+    //Making the paths
     public void buildPaths() {
         // put in coordinates for starting pose > ending pose
         driveStartPosShootPos = follower.pathBuilder()
@@ -83,8 +88,22 @@ public class BlueAutoTop extends OpMode {
                 .addPath(new BezierLine(beginPickup2, finalPickup2))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
+
+        driveFPoseShootPose2 = follower.pathBuilder()
+                .addPath(new BezierCurve(
+                        finalPickup2,
+                        midCurveFPickupShoot,
+                        shootPose))
+                .setLinearHeadingInterpolation(finalPickup2.getHeading(), shootPose.getHeading())
+                .build();
+
+        driveShootPosLeave = follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, leave))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), leave.getHeading())
+                .build();
     }
 
+    // State Machine
     public void statePathUpdate() {
         switch(pathState){
             case DRIVE_STARTPOS_SHOOT_POS:
@@ -129,7 +148,7 @@ public class BlueAutoTop extends OpMode {
                 break;
             case SHOOT_ONE:
                 if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.1){ // not using sleep as it stops the whole thread so using timer instead
-                    firing();
+                    firingOne();
                     telemetry.addLine("Shooting");
                     if(pathTimer.getElapsedTimeSeconds() > 6) {
                         // transition to next state
@@ -145,11 +164,35 @@ public class BlueAutoTop extends OpMode {
                         follower.setMaxPower(0.5);
                         telemetry.addLine("Intaking");
                         follower.followPath(driveBPoseFPose2, true);
-                        telemetry.addLine("Going to shoot");
                         setPathState(PathState.DRIVE_PICKUP2_SHOOT_POS);
                     }
                 }
                 break;
+            case DRIVE_PICKUP2_SHOOT_POS:
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.1) {
+                    sorter.setOutA();
+                    if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() >= 0.1) {
+                        follower.setMaxPower(1.0);
+                        telemetry.addLine("Going to shoot");
+                        follower.followPath(driveFPoseShootPose2, true);
+                        setPathState(PathState.SHOOT_TWO);
+                    }
+                }
+                break;
+            case SHOOT_TWO:
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.1){ // not using sleep as it stops the whole thread so using timer instead
+                    firingTwo();
+                    telemetry.addLine("Shooting");
+                    if(pathTimer.getElapsedTimeSeconds() > 6) {
+                        setPathState(PathState.LEAVE);
+                    }
+                }
+                break;
+            case LEAVE:
+                if(!follower.isBusy()){
+                    follower.followPath(driveShootPosLeave, true);
+                    telemetry.addLine("Leaving");
+                    }
             default:
                 telemetry.addLine("Not in any state");
                 break;
@@ -192,7 +235,7 @@ public class BlueAutoTop extends OpMode {
             sorter.setIntakeA();
         }
     }
-    public void firing() {
+    public void firingOne() {
         telemetry.addData("Time", pathTimer.getElapsedTimeSeconds());
         if (pathTimer.getElapsedTimeSeconds() > 1 && pathTimer.getElapsedTimeSeconds() < 1.7) {
             telemetry.addLine("Kicking");
@@ -224,6 +267,37 @@ public class BlueAutoTop extends OpMode {
         }
     }
 
+    public void firingTwo() {
+        telemetry.addData("Time", pathTimer.getElapsedTimeSeconds());
+        if (pathTimer.getElapsedTimeSeconds() > 2 && pathTimer.getElapsedTimeSeconds() < 2.7) {
+            telemetry.addLine("Kicking");
+            kick.kick();
+        }
+        if (pathTimer.getElapsedTimeSeconds() > 2.7 && pathTimer.getElapsedTimeSeconds() < 3.4) {
+            kick.retract();
+        }
+        if(pathTimer.getElapsedTimeSeconds() > 3.4 && pathTimer.getElapsedTimeSeconds() < 3.7){
+            sorter.setOutC();
+        }
+        if (pathTimer.getElapsedTimeSeconds() > 3.7 && pathTimer.getElapsedTimeSeconds() < 4.4) {
+            kick.kick();
+        }
+        if (pathTimer.getElapsedTimeSeconds() > 4.4 && pathTimer.getElapsedTimeSeconds() < 5.1) {
+            kick.retract();
+            telemetry.addLine("After 2nd kick");
+        }
+        if(pathTimer.getElapsedTimeSeconds() > 5.1 && pathTimer.getElapsedTimeSeconds() < 5.4){
+            sorter.setOutB();
+            telemetry.addLine("In third kick");
+        }
+        if (pathTimer.getElapsedTimeSeconds() > 5.4 && pathTimer.getElapsedTimeSeconds() < 6.1) {
+            kick.kick();
+        }
+        if (pathTimer.getElapsedTimeSeconds() > 6.1) {
+            kick.retract();
+        }
+    }
+
     @Override
     public void init() {
         pathState = PathState.DRIVE_STARTPOS_SHOOT_POS;
@@ -234,7 +308,7 @@ public class BlueAutoTop extends OpMode {
         sorter.init(hardwareMap);
         kick.init(hardwareMap);
         intake.init(hardwareMap);
-        // TODO add any other subsystems
+        // TODO add any other subsystems (for limelight pattern)
         buildPaths();
         follower.setPose(startPose);
     }

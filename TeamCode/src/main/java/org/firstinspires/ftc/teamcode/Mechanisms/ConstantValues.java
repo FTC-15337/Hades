@@ -10,10 +10,10 @@ public class ConstantValues {
     public static double sorterIntakeA = 0.03;
     public static double sorterIntakeB = 0.105;
     public static double sorterIntakeC = 0.17;
-    public static double sorterOutTakeA = 0.14;
+    public static double sorterOutTakeA = 0.135;
     public static double sorterOutTakeB = 0.0;
-    public static double sorterOutTakeC = 0.07;
+    public static double sorterOutTakeC = 0.065;
     public static double kick = 0.0;
-    public static double retract = 0.5;
+    public static double retract = 0.55;
 
 }

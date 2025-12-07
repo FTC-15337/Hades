@@ -13,6 +13,6 @@ public class ConstantValues {
     public static double intakeStop = 0.0;
     public static double intakeMax = 1.0;
     public static double intakeRev = -1.0;
-    public static double kick = 0.18;
-    public static double retract = 0.45;
+    public static double kick = 0.08;
+    public static double retract = 0.35;
 }

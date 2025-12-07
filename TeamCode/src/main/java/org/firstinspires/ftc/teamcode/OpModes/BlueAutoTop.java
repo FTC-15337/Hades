@@ -10,19 +10,19 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.IntakeConfig;
-import org.firstinspires.ftc.teamcode.Mechanisms.Kicker;
-import org.firstinspires.ftc.teamcode.Mechanisms.MecanumDrivebase;
-import org.firstinspires.ftc.teamcode.Mechanisms.ShootingConfig;
+import org.firstinspires.ftc.teamcode.Mechanisms.MecDrivebase;
+import org.firstinspires.ftc.teamcode.Mechanisms.ServoKick;
+import org.firstinspires.ftc.teamcode.Mechanisms.ShooterConfig;
 import org.firstinspires.ftc.teamcode.Mechanisms.StorageConfig;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
 @Autonomous(name = "BLUE AUTO TOP")
 public class BlueAutoTop extends OpMode {
     private StorageConfig sorter = new StorageConfig();
-    private ShootingConfig shooter = new ShootingConfig();
-    private Kicker kick = new Kicker();
+    private ShooterConfig shooter = new ShooterConfig();
+    private ServoKick kick = new ServoKick();
     private IntakeConfig intake = new IntakeConfig();
-    private MecanumDrivebase drive = new MecanumDrivebase();
+    private MecDrivebase drive = new MecDrivebase();
     private Follower follower;
     private Timer pathTimer, opModeTimer;
 
@@ -126,7 +126,7 @@ public class BlueAutoTop extends OpMode {
                 break;
             case DRIVE_BPICKUP_FPICKUP:
                 if(!follower.isBusy()) {
-                    intake.intakeMax();
+                    intake.IntakeMotorMax();
                     if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() >= 0.1) {
                         follower.setMaxPower(0.5);
                         telemetry.addLine("Intaking");

@@ -3,19 +3,16 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Mechanisms.ConstantValues;
-import org.firstinspires.ftc.teamcode.Mechanisms.MecanumDrivebase;
-
-import java.net.ContentHandler;
-
+import org.firstinspires.ftc.teamcode.ConstantValues.Constants;
+import org.firstinspires.ftc.teamcode.Mechanisms.MecDrivebase;
 @TeleOp (name = "OutreachTele")
 public class OutreachTeleOp extends LinearOpMode {
-    MecanumDrivebase drive = new MecanumDrivebase();
+    MecDrivebase drive = new MecDrivebase();
     double forward, strafe, rotate;
 
     public void setDriver(){
         if(gamepad2.a) {
-            ConstantValues.driveMaxSpeed = ConstantValues.outreachDriveSpeed;
+            Constants.driveOutreach = 0.3;
             forward = -gamepad1.left_stick_y;
             strafe = gamepad1.left_stick_x;
             rotate = gamepad1.right_stick_x;

@@ -1,25 +1,24 @@
 package org.firstinspires.ftc.teamcode.Mechanisms;
 
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class Kicker {
+import org.firstinspires.ftc.teamcode.ConstantValues.Constants;
+
+public class ServoKick {
     Servo kick;
-    //push
 
     public void init(HardwareMap hwMap){
         kick = hwMap.get(Servo.class, "kick2");
+        kick.setPosition(Constants.retract);
     }
 
     public void kick(){
-        kick.setPosition(ConstantValues.kick);
+        kick.setPosition(Constants.kick);
     }
 
     public void retract(){
-        kick.setPosition(ConstantValues.retract);
+        kick.setPosition(Constants.retract);
     }
 
     public void zeroKick() {

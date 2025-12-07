@@ -2,51 +2,52 @@ package org.firstinspires.ftc.teamcode.Mechanisms;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.ConstantValues.Constants;
+
 public class StorageConfig {
-    //push
+
     private Servo storageServo;
 
     public void init(HardwareMap hwMap) {
         storageServo = hwMap.get(Servo.class , "storage");
     }
+
+    ServoKick kick = new ServoKick();
     public void setIntakeA(){
 
-        storageServo.setPosition(ConstantValues.sorterIntakeA);
+        storageServo.setPosition(Constants.sorterIntakeA);
     }
     public void setIntakeB(){
 
-        storageServo.setPosition(ConstantValues.sorterIntakeB);
+        storageServo.setPosition(Constants.sorterIntakeB);
     }
     public void setIntakeC(){
 
-        storageServo.setPosition(ConstantValues.sorterIntakeC);
+        storageServo.setPosition(Constants.sorterIntakeC);
     }
     public void setOutA(){
 
-        storageServo.setPosition(ConstantValues.sorterOutTakeA);
+        storageServo.setPosition(Constants.sorterOutTakeA);
     }
     public void setOutB(){
 
-        storageServo.setPosition(ConstantValues.sorterOutTakeB);
+        storageServo.setPosition(Constants.sorterOutTakeB);
     }
     public void setOutC(){
 
-        storageServo.setPosition(ConstantValues.sorterOutTakeC);
+        storageServo.setPosition(Constants.sorterOutTakeC);
     }
 
     public void setZero(){
         storageServo.setPosition(0.0);
     }
 
-    public void resetToIntake(){
-        storageServo.setPosition(ConstantValues.sorterIntakeA);
-    }
 
-    public double GetServoPos() {
-        return storageServo.getPosition();
-    }
+    public double getServoPos(){ return storageServo.getPosition();}
 
     public void setServo(double pos) {
         storageServo.setPosition(pos);
     }
+
 }

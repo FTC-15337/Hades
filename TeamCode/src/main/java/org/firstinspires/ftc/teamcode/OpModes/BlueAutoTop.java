@@ -11,18 +11,18 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.IntakeConfig;
 import org.firstinspires.ftc.teamcode.Mechanisms.Kicker;
+import org.firstinspires.ftc.teamcode.Mechanisms.MecanumDrivebase;
 import org.firstinspires.ftc.teamcode.Mechanisms.ShootingConfig;
 import org.firstinspires.ftc.teamcode.Mechanisms.StorageConfig;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
 @Autonomous(name = "BLUE AUTO TOP")
 public class BlueAutoTop extends OpMode {
-
-    // TODO add all the paths to finish blue auto top and build them and add to state machine
     private StorageConfig sorter = new StorageConfig();
     private ShootingConfig shooter = new ShootingConfig();
     private Kicker kick = new Kicker();
     private IntakeConfig intake = new IntakeConfig();
+    private MecanumDrivebase drive = new MecanumDrivebase();
     private Follower follower;
     private Timer pathTimer, opModeTimer;
 
@@ -38,7 +38,8 @@ public class BlueAutoTop extends OpMode {
         DRIVE_BPICKUP_FPICKUP2,
         DRIVE_PICKUP2_SHOOT_POS,
         SHOOT_TWO,
-        LEAVE
+        LEAVE,
+        STOP
     }
 
     PathState pathState;
@@ -126,7 +127,7 @@ public class BlueAutoTop extends OpMode {
             case DRIVE_BPICKUP_FPICKUP:
                 if(!follower.isBusy()) {
                     intake.intakeMax();
-                    if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() >= 1.0) {
+                    if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() >= 0.1) {
                         follower.setMaxPower(0.5);
                         telemetry.addLine("Intaking");
                         follower.followPath(driveBPoseFPose, true);
@@ -136,7 +137,7 @@ public class BlueAutoTop extends OpMode {
                 }
                 break;
             case DRIVE_PICKUP1_SHOOT_POS:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.1) {
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3) {
                     sorter.setOutA();
                     if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() >= 0.1) {
                         follower.setMaxPower(1.0);
@@ -169,7 +170,7 @@ public class BlueAutoTop extends OpMode {
                 }
                 break;
             case DRIVE_PICKUP2_SHOOT_POS:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.1) {
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3) {
                     sorter.setOutA();
                     if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() >= 0.1) {
                         follower.setMaxPower(1.0);
@@ -192,7 +193,16 @@ public class BlueAutoTop extends OpMode {
                 if(!follower.isBusy()){
                     follower.followPath(driveShootPosLeave, true);
                     telemetry.addLine("Leaving");
+                    setPathState(PathState.STOP);
                     }
+                break;
+            case STOP:
+                if(!follower.isBusy()){
+                    drive.frontLeft.setPower(0.0);
+                    drive.frontRight.setPower(0.0);
+                    drive.frontLeft.setPower(0.0);
+                    drive.frontLeft.setPower(0.0);
+                }
             default:
                 telemetry.addLine("Not in any state");
                 break;
@@ -206,32 +216,32 @@ public class BlueAutoTop extends OpMode {
 
     public void firingPre() {
         telemetry.addData("Time", pathTimer.getElapsedTimeSeconds());
-        if (pathTimer.getElapsedTimeSeconds() > 3 && pathTimer.getElapsedTimeSeconds() < 3.7) {
+        if (pathTimer.getElapsedTimeSeconds() > 2.5 && pathTimer.getElapsedTimeSeconds() < 3.2) {
             telemetry.addLine("Kicking");
             kick.kick();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 3.7 && pathTimer.getElapsedTimeSeconds() < 4.4) {
+        if (pathTimer.getElapsedTimeSeconds() > 3.2 && pathTimer.getElapsedTimeSeconds() < 3.9) {
             kick.retract();
         }
-        if(pathTimer.getElapsedTimeSeconds() > 4.4 && pathTimer.getElapsedTimeSeconds() < 4.7){
+        if(pathTimer.getElapsedTimeSeconds() > 3.9 && pathTimer.getElapsedTimeSeconds() < 4.2){
             sorter.setOutC();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 4.7 && pathTimer.getElapsedTimeSeconds() < 5.4) {
+        if (pathTimer.getElapsedTimeSeconds() > 4.2 && pathTimer.getElapsedTimeSeconds() < 4.9) {
             kick.kick();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 5.4 && pathTimer.getElapsedTimeSeconds() < 6.1) {
+        if (pathTimer.getElapsedTimeSeconds() > 4.9 && pathTimer.getElapsedTimeSeconds() < 5.6) {
             kick.retract();
         }
-        if(pathTimer.getElapsedTimeSeconds() > 6.1 && pathTimer.getElapsedTimeSeconds() < 6.4){
+        if(pathTimer.getElapsedTimeSeconds() > 5.6 && pathTimer.getElapsedTimeSeconds() < 5.9){
             sorter.setOutB();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 6.4 && pathTimer.getElapsedTimeSeconds() < 7.1) {
+        if (pathTimer.getElapsedTimeSeconds() > 5.9 && pathTimer.getElapsedTimeSeconds() < 6.6) {
             kick.kick();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 7.1 && pathTimer.getElapsedTimeSeconds() < 7.8) {
+        if (pathTimer.getElapsedTimeSeconds() > 6.6 && pathTimer.getElapsedTimeSeconds() < 7.3) {
             kick.retract();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 7.8) {
+        if (pathTimer.getElapsedTimeSeconds() > 7.3) {
             sorter.setIntakeA();
         }
     }
@@ -308,7 +318,7 @@ public class BlueAutoTop extends OpMode {
         sorter.init(hardwareMap);
         kick.init(hardwareMap);
         intake.init(hardwareMap);
-        // TODO add any other subsystems (for limelight pattern)
+        drive.init(hardwareMap);
         buildPaths();
         follower.setPose(startPose);
     }

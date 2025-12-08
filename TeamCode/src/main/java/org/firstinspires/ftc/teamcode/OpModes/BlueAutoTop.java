@@ -223,25 +223,25 @@ public class BlueAutoTop extends OpMode {
         if (pathTimer.getElapsedTimeSeconds() > 3.2 && pathTimer.getElapsedTimeSeconds() < 3.9) {
             kick.retract();
         }
-        if(pathTimer.getElapsedTimeSeconds() > 3.9 && pathTimer.getElapsedTimeSeconds() < 4.2){
+        if(pathTimer.getElapsedTimeSeconds() > 3.9 && pathTimer.getElapsedTimeSeconds() < 4.3){
             sorter.setOutC();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 4.2 && pathTimer.getElapsedTimeSeconds() < 4.9) {
+        if (pathTimer.getElapsedTimeSeconds() > 4.3 && pathTimer.getElapsedTimeSeconds() < 5.0) {
             kick.kick();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 4.9 && pathTimer.getElapsedTimeSeconds() < 5.6) {
+        if (pathTimer.getElapsedTimeSeconds() > 5.0 && pathTimer.getElapsedTimeSeconds() < 5.7) {
             kick.retract();
         }
-        if(pathTimer.getElapsedTimeSeconds() > 5.6 && pathTimer.getElapsedTimeSeconds() < 5.9){
+        if(pathTimer.getElapsedTimeSeconds() > 5.7 && pathTimer.getElapsedTimeSeconds() < 6.1){
             sorter.setOutB();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 5.9 && pathTimer.getElapsedTimeSeconds() < 6.6) {
+        if (pathTimer.getElapsedTimeSeconds() > 6.1 && pathTimer.getElapsedTimeSeconds() < 6.8) {
             kick.kick();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 6.6 && pathTimer.getElapsedTimeSeconds() < 7.3) {
+        if (pathTimer.getElapsedTimeSeconds() > 6.8 && pathTimer.getElapsedTimeSeconds() < 7.5) {
             kick.retract();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 7.3) {
+        if (pathTimer.getElapsedTimeSeconds() > 7.5) {
             sorter.setIntakeA();
         }
     }
@@ -254,25 +254,25 @@ public class BlueAutoTop extends OpMode {
         if (pathTimer.getElapsedTimeSeconds() > 1.7 && pathTimer.getElapsedTimeSeconds() < 2.4) {
             kick.retract();
         }
-        if(pathTimer.getElapsedTimeSeconds() > 2.4 && pathTimer.getElapsedTimeSeconds() < 2.7){
+        if(pathTimer.getElapsedTimeSeconds() > 2.4 && pathTimer.getElapsedTimeSeconds() < 2.8){
             sorter.setOutC();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 2.7 && pathTimer.getElapsedTimeSeconds() < 3.4) {
+        if (pathTimer.getElapsedTimeSeconds() > 2.8 && pathTimer.getElapsedTimeSeconds() < 3.5) {
             kick.kick();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 3.4 && pathTimer.getElapsedTimeSeconds() < 4.1) {
+        if (pathTimer.getElapsedTimeSeconds() > 3.5 && pathTimer.getElapsedTimeSeconds() < 4.2) {
             kick.retract();
         }
-        if(pathTimer.getElapsedTimeSeconds() > 4.1 && pathTimer.getElapsedTimeSeconds() < 4.4){
+        if(pathTimer.getElapsedTimeSeconds() > 4.2 && pathTimer.getElapsedTimeSeconds() < 4.6){
             sorter.setOutB();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 4.4 && pathTimer.getElapsedTimeSeconds() < 5.1) {
+        if (pathTimer.getElapsedTimeSeconds() > 4.6 && pathTimer.getElapsedTimeSeconds() < 5.3) {
             kick.kick();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 5.1 && pathTimer.getElapsedTimeSeconds() < 5.8) {
+        if (pathTimer.getElapsedTimeSeconds() > 5.3 && pathTimer.getElapsedTimeSeconds() < 6.0) {
             kick.retract();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 5.8) {
+        if (pathTimer.getElapsedTimeSeconds() > 6.0) {
             sorter.setIntakeA();
         }
     }
@@ -286,24 +286,22 @@ public class BlueAutoTop extends OpMode {
         if (pathTimer.getElapsedTimeSeconds() > 2.7 && pathTimer.getElapsedTimeSeconds() < 3.4) {
             kick.retract();
         }
-        if(pathTimer.getElapsedTimeSeconds() > 3.4 && pathTimer.getElapsedTimeSeconds() < 3.7){
+        if(pathTimer.getElapsedTimeSeconds() > 3.4 && pathTimer.getElapsedTimeSeconds() < 3.8){
             sorter.setOutC();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 3.7 && pathTimer.getElapsedTimeSeconds() < 4.4) {
+        if (pathTimer.getElapsedTimeSeconds() > 3.8 && pathTimer.getElapsedTimeSeconds() < 4.5) {
             kick.kick();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 4.4 && pathTimer.getElapsedTimeSeconds() < 5.1) {
+        if (pathTimer.getElapsedTimeSeconds() > 4.5 && pathTimer.getElapsedTimeSeconds() < 5.2) {
             kick.retract();
-            telemetry.addLine("After 2nd kick");
         }
-        if(pathTimer.getElapsedTimeSeconds() > 5.1 && pathTimer.getElapsedTimeSeconds() < 5.4){
+        if(pathTimer.getElapsedTimeSeconds() > 5.2 && pathTimer.getElapsedTimeSeconds() < 5.6){
             sorter.setOutB();
-            telemetry.addLine("In third kick");
         }
-        if (pathTimer.getElapsedTimeSeconds() > 5.4 && pathTimer.getElapsedTimeSeconds() < 6.1) {
+        if (pathTimer.getElapsedTimeSeconds() > 5.6 && pathTimer.getElapsedTimeSeconds() < 6.3) {
             kick.kick();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 6.1) {
+        if (pathTimer.getElapsedTimeSeconds() > 6.3) {
             kick.retract();
         }
     }
@@ -325,7 +323,7 @@ public class BlueAutoTop extends OpMode {
 
     @Override
     public void start() {
-        shooter.hoodClose();
+        shooter.hoodAutoClose();
         kick.retract();
         shooter.CloseOut();
         sorter.setOutA();

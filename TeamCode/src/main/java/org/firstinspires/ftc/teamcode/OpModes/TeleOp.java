@@ -120,6 +120,10 @@ public class TeleOp extends LinearOpMode {
             kickTimer.reset();
         }
 
+        if(gamepad2.dpad_down){
+            sorter.setIntakeA();
+        }
+
         unsortedKick();
 
         if(gamepad2.left_trigger >= 0.7) {

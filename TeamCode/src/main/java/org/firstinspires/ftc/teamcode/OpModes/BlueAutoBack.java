@@ -37,7 +37,8 @@ public class BlueAutoBack extends OpMode {
         SHOOT_ONE,
         INTAKE_TWO,
         DRIVE_PICKUP_TWO_SHOOT_POS,
-        SHOOT_TWO
+        SHOOT_TWO,
+        STOP
     }
 
     PathState pathState;
@@ -47,9 +48,10 @@ public class BlueAutoBack extends OpMode {
     private final Pose beginPickup1 = new Pose(41.67094515752625, 36.789964994165686, Math.toRadians(180));
     private final Pose finalPickup1 = new Pose(7.414634146341464, 35.789964994165686, Math.toRadians(180));
     private final Pose beginPickup2 = new Pose(56.961493582263714, 59.649941656942815, Math.toRadians(180));
-    private final Pose finalPickup2 = new Pose(7.414634146341464, 59.649941656942815, Math.toRadians(180));
+    private final Pose finalPickup2 = new Pose(7.414634146341464, 58.649941656942815, Math.toRadians(180));
+    private final Pose leave = new Pose(56.961493582263714, 25, Math.toRadians(0));
 
-    private PathChain driveStartPosShootPos, driveShootPosBPickupPos, driveBPickupFPickup, driveFPickupShootPose, driveShootPosBPickupPos2, driveBPickupFPickup2, driveFPickupShootPose2;
+    private PathChain driveStartPosShootPos, driveShootPosBPickupPos, driveBPickupFPickup, driveFPickupShootPose, driveShootPosBPickupPos2, driveBPickupFPickup2, driveFPickupShootPose2, driveShootPosLeave;
 
     //Making the paths
     public void buildPaths() {
@@ -88,6 +90,11 @@ public class BlueAutoBack extends OpMode {
                 .addPath(new BezierLine(finalPickup2, shootPose))
                 .setLinearHeadingInterpolation(finalPickup2.getHeading(), shootPose.getHeading())
                 .build();
+
+        driveShootPosLeave = follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, leave))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), leave.getHeading())
+                .build();
     }
 
     // State Machine
@@ -101,10 +108,10 @@ public class BlueAutoBack extends OpMode {
                 }
                 break;
             case SHOOT_PRELOAD:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2){
                     firingPre();
                     telemetry.addLine("Shooting");
-                    if(pathTimer.getElapsedTimeSeconds() > 7.5){
+                    if(pathTimer.getElapsedTimeSeconds() > 8.5){
                         follower.followPath(driveShootPosBPickupPos);
                         telemetry.addLine("Going to Intake");
                         setPathState(PathState.INTAKE_ONE);
@@ -138,7 +145,7 @@ public class BlueAutoBack extends OpMode {
                 if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1){ // not using sleep as it stops the whole thread so using timer instead
                     firingOne();
                     telemetry.addLine("Shooting");
-                    if(pathTimer.getElapsedTimeSeconds() > 6) {
+                    if(pathTimer.getElapsedTimeSeconds() > 7) {
                         // transition to next state
                         follower.followPath(driveShootPosBPickupPos2, true);
                         telemetry.addLine("Going to intake");
@@ -166,6 +173,26 @@ public class BlueAutoBack extends OpMode {
                         setPathState(PathState.SHOOT_TWO);
                     }
                 }
+                break;
+            case SHOOT_TWO:
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1){ // not using sleep as it stops the whole thread so using timer instead
+                    firingTwo();
+                    telemetry.addLine("Shooting");
+                    if(pathTimer.getElapsedTimeSeconds() > 6.5) {
+                        // transition to next state
+                        follower.followPath(driveShootPosLeave, true);
+                        telemetry.addLine("Leaving");
+                        setPathState(PathState.STOP);
+                    }
+                }
+                break;
+            case STOP:
+                if(!follower.isBusy()){
+                    drive.frontLeft.setPower(0.0);
+                    drive.frontRight.setPower(0.0);
+                    drive.frontLeft.setPower(0.0);
+                    drive.frontLeft.setPower(0.0);
+                }
             default:
                 telemetry.addLine("Not in any state");
                 break;
@@ -179,63 +206,63 @@ public class BlueAutoBack extends OpMode {
 
     public void firingPre() {
         telemetry.addData("Time", pathTimer.getElapsedTimeSeconds());
-        if (pathTimer.getElapsedTimeSeconds() > 2.5 && pathTimer.getElapsedTimeSeconds() < 3.2) {
+        if (pathTimer.getElapsedTimeSeconds() > 3.5 && pathTimer.getElapsedTimeSeconds() < 4.2) {
             telemetry.addLine("Kicking");
             kick.kick();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 3.2 && pathTimer.getElapsedTimeSeconds() < 3.9) {
+        if (pathTimer.getElapsedTimeSeconds() > 4.2 && pathTimer.getElapsedTimeSeconds() < 4.9) {
             kick.retract();
         }
-        if(pathTimer.getElapsedTimeSeconds() > 3.9 && pathTimer.getElapsedTimeSeconds() < 4.3){
+        if(pathTimer.getElapsedTimeSeconds() > 4.9 && pathTimer.getElapsedTimeSeconds() < 5.3){
             sorter.setOutC();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 4.3 && pathTimer.getElapsedTimeSeconds() < 5.0) {
+        if (pathTimer.getElapsedTimeSeconds() > 5.3 && pathTimer.getElapsedTimeSeconds() < 6.0) {
             kick.kick();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 5.0 && pathTimer.getElapsedTimeSeconds() < 5.7) {
+        if (pathTimer.getElapsedTimeSeconds() > 6.0 && pathTimer.getElapsedTimeSeconds() < 6.7) {
             kick.retract();
         }
-        if(pathTimer.getElapsedTimeSeconds() > 5.7 && pathTimer.getElapsedTimeSeconds() < 6.1){
+        if(pathTimer.getElapsedTimeSeconds() > 6.7 && pathTimer.getElapsedTimeSeconds() < 7.1){
             sorter.setOutB();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 6.1 && pathTimer.getElapsedTimeSeconds() < 6.8) {
+        if (pathTimer.getElapsedTimeSeconds() > 7.1 && pathTimer.getElapsedTimeSeconds() < 7.8) {
             kick.kick();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 6.8 && pathTimer.getElapsedTimeSeconds() < 7.5) {
+        if (pathTimer.getElapsedTimeSeconds() > 7.8 && pathTimer.getElapsedTimeSeconds() < 8.5) {
             kick.retract();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 7.5) {
+        if (pathTimer.getElapsedTimeSeconds() > 8.5) {
             sorter.setIntakeA();
         }
     }
     public void firingOne() {
         telemetry.addData("Time", pathTimer.getElapsedTimeSeconds());
-        if (pathTimer.getElapsedTimeSeconds() > 1 && pathTimer.getElapsedTimeSeconds() < 1.7) {
+        if (pathTimer.getElapsedTimeSeconds() > 1.8 && pathTimer.getElapsedTimeSeconds() < 2.5) {
             telemetry.addLine("Kicking");
             kick.kick();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 1.7 && pathTimer.getElapsedTimeSeconds() < 2.4) {
+        if (pathTimer.getElapsedTimeSeconds() > 2.5 && pathTimer.getElapsedTimeSeconds() < 3.2) {
             kick.retract();
         }
-        if(pathTimer.getElapsedTimeSeconds() > 2.4 && pathTimer.getElapsedTimeSeconds() < 2.8){
+        if(pathTimer.getElapsedTimeSeconds() > 3.2 && pathTimer.getElapsedTimeSeconds() < 3.6){
             sorter.setOutC();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 2.8 && pathTimer.getElapsedTimeSeconds() < 3.5) {
+        if (pathTimer.getElapsedTimeSeconds() > 3.6 && pathTimer.getElapsedTimeSeconds() < 4.3) {
             kick.kick();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 3.5 && pathTimer.getElapsedTimeSeconds() < 4.2) {
+        if (pathTimer.getElapsedTimeSeconds() > 4.3 && pathTimer.getElapsedTimeSeconds() < 5.0) {
             kick.retract();
         }
-        if(pathTimer.getElapsedTimeSeconds() > 4.2 && pathTimer.getElapsedTimeSeconds() < 4.6){
+        if(pathTimer.getElapsedTimeSeconds() > 5.0 && pathTimer.getElapsedTimeSeconds() < 5.4){
             sorter.setOutB();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 4.6 && pathTimer.getElapsedTimeSeconds() < 5.3) {
+        if (pathTimer.getElapsedTimeSeconds() > 5.4 && pathTimer.getElapsedTimeSeconds() < 6.1) {
             kick.kick();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 5.3 && pathTimer.getElapsedTimeSeconds() < 6.0) {
+        if (pathTimer.getElapsedTimeSeconds() > 6.1 && pathTimer.getElapsedTimeSeconds() < 6.8) {
             kick.retract();
         }
-        if (pathTimer.getElapsedTimeSeconds() > 6.0) {
+        if (pathTimer.getElapsedTimeSeconds() > 6.8) {
             sorter.setIntakeA();
         }
     }
@@ -288,9 +315,9 @@ public class BlueAutoBack extends OpMode {
 
     @Override
     public void start() {
-        shooter.hoodFar();
+        shooter.hoodAutoFar();
         kick.retract();
-        shooter.OutAutoFar();
+        shooter.FarOut();
         sorter.setOutA();
         opModeTimer.resetTimer();
         setPathState(pathState);

@@ -323,7 +323,7 @@ public class BlueAutoTop extends OpMode {
 
     @Override
     public void start() {
-        shooter.hoodAutoClose();
+        shooter.hoodClose();
         kick.retract();
         shooter.CloseOut();
         sorter.setOutA();

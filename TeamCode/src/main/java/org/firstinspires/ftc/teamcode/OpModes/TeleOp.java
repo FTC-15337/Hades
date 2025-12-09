@@ -188,8 +188,12 @@ public class TeleOp extends LinearOpMode {
         while (!isStopRequested() && opModeIsActive()) {
             setDriver();
             setOperator();
-            if(ledTimer.seconds() >= 102){
-                led.startLed();
+            if(ledTimer.seconds() >= 102 && ledTimer.seconds() < 120){
+                led.redLed();
+            } else if(ledTimer.seconds() >= 62 && ledTimer.seconds() < 102){
+                led.yellowLed();
+            } else if(ledTimer.seconds() >= 120){
+                led.stopLed();
             } else {
                 led.stopLed();
             }

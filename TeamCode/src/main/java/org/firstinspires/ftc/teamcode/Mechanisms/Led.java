@@ -11,8 +11,12 @@ public class Led {
         led = hwMap.get(Servo.class, "led");
 
     }
-    public void startLed(){
+    public void redLed(){
         led.setPosition(0.28);
+    }
+
+    public void yellowLed(){
+        led.setPosition(0.388);
     }
     public void stopLed(){
         led.setPosition(0.0);

@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -49,7 +48,7 @@ public class BlueAutoBack extends OpMode {
     private final Pose finalPickup1 = new Pose(7.414634146341464, 35.789964994165686, Math.toRadians(180));
     private final Pose beginPickup2 = new Pose(56.961493582263714, 59.649941656942815, Math.toRadians(180));
     private final Pose finalPickup2 = new Pose(7.414634146341464, 58.649941656942815, Math.toRadians(180));
-    private final Pose leave = new Pose(56.961493582263714, 25, Math.toRadians(0));
+    private final Pose leave = new Pose(56.961493582263714, 35, Math.toRadians(0));
 
     private PathChain driveStartPosShootPos, driveShootPosBPickupPos, driveBPickupFPickup, driveFPickupShootPose, driveShootPosBPickupPos2, driveBPickupFPickup2, driveFPickupShootPose2, driveShootPosLeave;
 

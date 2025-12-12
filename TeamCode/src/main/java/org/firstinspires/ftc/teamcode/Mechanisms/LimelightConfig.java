@@ -18,6 +18,12 @@ public class LimelightConfig {
         limelight.start();
     }
 
+    public void autoInit(HardwareMap hwMap) {
+        limelight = hwMap.get(Limelight3A.class, "limelight");
+        limelight.pipelineSwitch(8);
+        limelight.start();
+    }
+
     private LLResult getSafeResult() {
         LLResult result = limelight.getLatestResult();
         if (result == null || !result.isValid()) {

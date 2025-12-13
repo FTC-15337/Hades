@@ -316,7 +316,7 @@ public class BlueAutoBack extends OpMode {
     public void start() {
         shooter.hoodAutoFar();
         kick.retract();
-        shooter.FarOut();
+        shooter.FarAutoOut();
         sorter.setOutA();
         opModeTimer.resetTimer();
         setPathState(pathState);
